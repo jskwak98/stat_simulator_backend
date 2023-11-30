@@ -10,12 +10,14 @@ from contextlib import asynccontextmanager
 async def lifespan(app: FastAPI):
     # Database를 처음에 연결할 것
     await database.connect()
+
+    metadata.create_all(bind=engine)
     yield
     # 닫을 것
     await database.disconnect()
 
 app = FastAPI(lifespan=lifespan)
 
-metadata.create_all(bind=engine)
+
 
 app.include_router(auth.router)
