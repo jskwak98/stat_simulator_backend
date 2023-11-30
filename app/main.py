@@ -1,7 +1,7 @@
 # main.py
 from fastapi import FastAPI
 from database import engine, metadata, database
-from routers import auth
+from routers import auth, dice_simul
 
 from contextlib import asynccontextmanager
 
@@ -18,6 +18,5 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-
-
 app.include_router(auth.router)
+app.include_router(dice_simul.router)
