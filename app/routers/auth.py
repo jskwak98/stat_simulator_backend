@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends, status
 from sqlalchemy.sql import select
 from passlib.context import CryptContext
-from models.user import users, UserCreate, UserInDB
+from models.user import users, UserCreate
 from database import database
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
