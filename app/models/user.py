@@ -1,16 +1,12 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy import Table, Column, String
 from database import metadata
 
 # Pydantic model for request validation
 class UserCreate(BaseModel):
-    user_id: str  # Acts as the username
-    password: str
-    nickname: str
-
-class UserInDB(BaseModel):
-    user_id: str  # Acts as the username
-    nickname: str
+    user_id: str = Field(example="test") # Acts as the username
+    password: str = Field(example="test")
+    nickname: str = Field(example="test")
 
 # SQLAlchemy model for the database
 users = Table(

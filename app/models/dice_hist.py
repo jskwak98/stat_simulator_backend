@@ -1,10 +1,10 @@
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, Field
 from sqlalchemy import Table, Column, String, Integer, ForeignKey
 from database import metadata
 
 # Pydantic Model
 class DiceRollCreate(BaseModel):
-    user_id: str
+    user_id: str = Field(example="test")
     rolls: list[int]
 
     # 값을 체크하기

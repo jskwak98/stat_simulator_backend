@@ -1,10 +1,10 @@
 from sqlalchemy import Table, Column, Integer, Boolean, String, ForeignKey
 from database import metadata
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 class MontyHallResultCreate(BaseModel):
-    user_id: str
+    user_id: str = Field(example="test")
     change: bool
     win: bool
     record: bool # 이걸 체크해서 실 기록용으로 쓰는지 확인하기
