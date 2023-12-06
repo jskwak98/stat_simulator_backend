@@ -10,7 +10,7 @@ class MontyHallResultCreate(BaseModel):
     record: bool # 이걸 체크해서 실 기록용으로 쓰는지 확인하기
 
 # 몬티 홀 내역 테이블
-monty_hall_results = Table(
+monty_hall_history = Table(
     "monty_hall_history",
     metadata,
     Column("monty_id", Integer, primary_key=True, autoincrement=True),

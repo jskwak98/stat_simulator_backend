@@ -2,7 +2,7 @@
 # js 잘 짜보자
 
 from fastapi import APIRouter
-from models.monty_hist import monty_hall_results, MontyHallResultCreate
+from models.monty_hist import monty_hall_history, MontyHallResultCreate
 from database import database
 from sqlalchemy.sql import func
 from global_config import simulations_config
@@ -16,7 +16,7 @@ MAX_MONTY_HALL_TRIALS = 7
 async def get_monty_hall_trial_count(user_id: str):
     # user_id로 monty_hall history 찾고 반환
     # Frontend에서도 사용할 것
-    query = func.count().select().where(monty_hall_results.c.user_id == user_id)
+    query = func.count().select().where(monty_hall_history.c.user_id == user_id)
     total_trials = await database.fetch_val(query)
     return {"total_trials": total_trials}
 
@@ -34,7 +34,7 @@ async def record_monty_hall_result(result: MontyHallResultCreate):
 
             # MAX보다 적다면 기록해준다.
             if total_trials < MAX_MONTY_HALL_TRIALS:
-                insert_query = monty_hall_results.insert().values(user_id=result.user_id, change=result.change, win=result.win)
+                insert_query = monty_hall_history.insert().values(user_id=result.user_id, change=result.change, win=result.win)
                 await database.execute(insert_query)
                 return {"message": "기록되었습니다!"}
             
