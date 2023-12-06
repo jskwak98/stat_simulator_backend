@@ -1,7 +1,7 @@
 # main.py
 from fastapi import FastAPI
 from database import engine, metadata, database
-from routers import auth, dice_simul, monty_hall, admin, choice
+from routers import auth, dice_simul, monty_hall, admin, choice, anti_choice
 
 from contextlib import asynccontextmanager
 
@@ -23,3 +23,4 @@ app.include_router(dice_simul.router)
 app.include_router(monty_hall.router)
 app.include_router(admin.router)
 app.include_router(choice.router)
+app.include_router(anti_choice.router)
