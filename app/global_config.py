@@ -12,9 +12,9 @@ def sample_and_sum():
     return sum(random.sample(range(1, 101), 6))
 
 # Number of times to repeat the sampling
-num_samples = 1000000
+NUM_SAMPLES = 1000000
 
 # List to hold the sum of each sample
-SUMS = [sample_and_sum() for _ in range(num_samples)]
+SUMS = [sample_and_sum() for _ in range(NUM_SAMPLES)]
 MEAN = np.mean(SUMS)
-STD = np.mean(SUMS)
+STD = np.std(SUMS)

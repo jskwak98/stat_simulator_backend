@@ -7,7 +7,7 @@ from models.monty_hist import monty_hall_history
 from models.choice_hist import choice_history
 from models.anti_choice_hist import anti_choice_history
 
-from global_config import SUMS, MEAN, STD
+from global_config import SUMS, MEAN, STD, NUM_SAMPLES
 
 from database import database
 from typing import Optional
@@ -35,7 +35,6 @@ async def dice_histogram(user_id: Optional[str] = None):
         query = select(sum_cases)
 
     # 실제로 실행
-    query = select(sum_cases)
     result = await database.fetch_one(query)
     
     # 데이터 반환
@@ -99,3 +98,24 @@ async def rarest_rolls():
     ]
 
     return {"top_3_users": top_users_with_rolls}
+
+# 특정값이 나올 확률 계산해주기
+@router.get("/get_dice_probs/{sum_rolls}")
+async def get_dice_probs(sum_rolls: int):
+    # 만약 평균 이하라면
+    if sum_rolls <= MEAN:
+        cnt = 0
+        for val in SUMS:
+            if sum_rolls >= val:
+                cnt += 1
+        return {"message": f"{sum_rolls} 이하로 나올 확률 -> {round(cnt / NUM_SAMPLES, 7) * 100}%",
+                "mean" : MEAN,
+                "std" : STD}
+    else:
+        cnt = 0
+        for val in SUMS:
+            if sum_rolls <= val:
+                cnt += 1
+        return {"message": f"{sum_rolls} 이상으로 나올 확률 -> {round(cnt / NUM_SAMPLES, 7) * 100}%",
+                "mean" : MEAN,
+                "std" : STD}
