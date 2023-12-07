@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query
 from global_config import simulations_config
 
-router = APIRouter()
+router = APIRouter(tags=["Admin"])
 
 @router.post("/admin/enable_dice")
 async def enable_dice_simulation(admin_id: str = Query(default="admin", description="Admin ID")):

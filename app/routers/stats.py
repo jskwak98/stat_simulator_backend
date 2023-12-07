@@ -12,7 +12,7 @@ from global_config import SUMS, MEAN, STD, NUM_SAMPLES
 from database import database
 from typing import Optional
 
-router = APIRouter()
+router = APIRouter(tags=["Statistics"])
 
 # 전체 그룹 dice_histogram
 # /dice_histogram?user_id=some_user_id 로 부르면 특정 유저의 결과가 나온다.
@@ -119,3 +119,6 @@ async def get_dice_probs(sum_rolls: int):
         return {"message": f"{sum_rolls} 이상으로 나올 확률 -> {round(cnt / NUM_SAMPLES, 7) * 100}%",
                 "mean" : MEAN,
                 "std" : STD}
+    
+
+

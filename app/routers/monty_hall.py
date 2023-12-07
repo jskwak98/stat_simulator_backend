@@ -7,7 +7,7 @@ from database import database
 from sqlalchemy.sql import func
 from global_config import simulations_config
 
-router = APIRouter()
+router = APIRouter(tags=["Monty Hall"])
 
 MAX_MONTY_HALL_TRIALS = 7
 

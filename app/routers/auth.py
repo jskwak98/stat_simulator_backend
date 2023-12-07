@@ -5,7 +5,7 @@ from models.user import users, UserCreate
 from database import database
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
-router = APIRouter()
+router = APIRouter(tags=["Auth"])
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBasic()
 

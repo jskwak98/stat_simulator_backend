@@ -5,7 +5,7 @@ from models.anti_choice_hist import anti_choice_history, AntiChoiceCreate
 from database import database
 from global_config import simulations_config
 
-router = APIRouter()
+router = APIRouter(tags=["Anti Choice"])
 
 # 선택은 한 번
 @router.get("/anti_choice_check/{user_id}")

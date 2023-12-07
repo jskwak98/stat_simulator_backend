@@ -9,7 +9,7 @@ from random import randint
 
 MAX_ROLLS = 20
 
-router = APIRouter()
+router = APIRouter(tags=["Dice Roll"])
 
 # 유효한 Valid Roll 개수를 check함
 @router.get("/roll_check/{user_id}")

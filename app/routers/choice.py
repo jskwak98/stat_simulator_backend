@@ -5,7 +5,7 @@ from models.choice_hist import choice_history, ChoiceCreate
 from database import database
 from global_config import simulations_config
 
-router = APIRouter()
+router = APIRouter(tags=["Choice"])
 
 # 선택은 한 번
 @router.get("/choice_check/{user_id}")
