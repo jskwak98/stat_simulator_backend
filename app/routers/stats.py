@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from sqlalchemy.sql import func, select, case, join
 
 from models.user import users
@@ -121,4 +121,71 @@ async def get_dice_probs(sum_rolls: int):
                 "std" : STD}
     
 
+# Monty Hall 관련 APIs
 
+# 학생들의 전략 선택이 어땠는지 보여준다
+@router.get("/get_strategy_stats")
+async def get_strategy_stats(user_id: Optional[str] = None):
+    # 바꿨는지 안 바꿨는지를 기반으로 Return
+    query = select([
+        func.sum(case([(monty_hall_history.c.change == True, 1)], else_=0)).label("changed"),
+        func.sum(case([(monty_hall_history.c.change == False, 1)], else_=0)).label("not_changed")
+    ])
+    # 개인화 통계 표출용도
+    if user_id:
+        query = query.where(monty_hall_history.c.user_id == user_id)
+    result = await database.fetch_one(query)
+    return {"changed": result['changed'], "not_changed": result['not_changed']}
+
+# 전략 선택에 따라서 얼마나 이겼는지 보여준다
+@router.get("/get_win_stats")
+async def get_win_stats(user_id: Optional[str] = None):
+    # case별 승률과, case별 trial 수를 반환
+    query = select([
+        func.sum(case([(monty_hall_history.c.change == True, 1)], else_=0)).label("changed_wins"),
+        func.count().filter(monty_hall_history.c.change == True).label("total_changed"),
+        func.sum(case([(monty_hall_history.c.change == False, 1)], else_=0)).label("not_changed_wins"),
+        func.count().filter(monty_hall_history.c.change == False).label("total_not_changed")
+    ])
+    # 개인화
+    if user_id:
+        query = query.where(monty_hall_history.c.user_id == user_id)
+    result = await database.fetch_one(query)
+
+    # 아직 시도가 없는 경우를 생각할 것
+    return {
+        "changed_win_rate": result['changed_wins'] / result['total_changed'] if result['total_changed'] else 0,
+        "not_changed_win_rate": result['not_changed_wins'] / result['total_not_changed'] if result['total_not_changed'] else 0
+    }
+
+# 최고 최저 승률 학생들을 보여준다
+@router.get("/winning_students")
+async def winning_students():
+    # subquery를 통해서 개별 승수를 뽑을 수 있게끔 한다
+    subquery = select([
+        monty_hall_history.c.user_id,
+        func.count().filter(monty_hall_history.c.win == True).label("number_of_wins")
+    ]).group_by(monty_hall_history.c.user_id).subquery()
+
+    # 닉네임을 위해 user 테이블과 합침
+    # 이후 승수에 따라 정렬
+    query = select([
+        users.c.user_id, users.c.nickname, subquery.c.number_of_wins
+    ]).select_from(
+        subquery.join(users, subquery.c.user_id == users.c.user_id)
+    ).order_by(subquery.c.number_of_wins.desc())
+
+    results = await database.fetch_all(query)
+
+    # 최고 최저 승률 학생 return하기
+    if not results:
+        return {"best_students": [], "worst_students": []}
+    
+    max_wins = results[0].number_of_wins
+    min_wins = results[-1].number_of_wins
+
+    # 최고 최저 승수를 쌓은 학생들을 리스트에 넣어 반환하기
+    best_students = [r for r in results if r.number_of_wins == max_wins]
+    worst_students = [r for r in results if r.number_of_wins == min_wins]
+
+    return {"best_students": best_students, "worst_students": worst_students}
