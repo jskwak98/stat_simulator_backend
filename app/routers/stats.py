@@ -154,7 +154,6 @@ async def get_win_stats(user_id: Optional[str] = None):
     if user_id:
         query = query.where(monty_hall_history.c.user_id == user_id)
     result = await database.fetch_one(query)
-    print(result)
 
     # 아직 시도가 없는 경우를 생각할 것
     return {

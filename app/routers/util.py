@@ -31,9 +31,9 @@ async def register_students():
 # 스트레스 테스트를 겸함
 @router.post("/make_test_set")
 async def make_test_set():
-    print(await enable_dice_simulation(admin_id="admin"))
-    print(await enable_monty_hall(admin_id="admin"))
-    print(await enable_anti_choice(admin_id="admin"))
+    await enable_dice_simulation(admin_id="admin")
+    await enable_monty_hall(admin_id="admin")
+    await enable_anti_choice(admin_id="admin")
 
     start = time.time()
     for grade in range(1, 4):
@@ -64,7 +64,6 @@ async def make_test_set():
     end = time.time()
     
     message = f"소요시간 : {end - start}초"
-    print(await disable_all(admin_id="admin"))
-    print(message)
+    await disable_all(admin_id="admin")
 
     return {"message": message}
