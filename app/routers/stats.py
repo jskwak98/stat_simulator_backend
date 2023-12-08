@@ -145,15 +145,16 @@ async def get_strategy_stats(user_id: Optional[str] = None):
 async def get_win_stats(user_id: Optional[str] = None):
     # case별 승률과, case별 trial 수를 반환
     query = select([
-        func.sum(case([(monty_hall_history.c.change == True, 1)], else_=0)).label("changed_wins"),
+        func.sum(case([(monty_hall_history.c.change == True, 1)], else_=0)).filter(monty_hall_history.c.win == True).label("changed_wins"),
         func.count().filter(monty_hall_history.c.change == True).label("total_changed"),
-        func.sum(case([(monty_hall_history.c.change == False, 1)], else_=0)).label("not_changed_wins"),
+        func.sum(case([(monty_hall_history.c.change == False, 1)], else_=0)).filter(monty_hall_history.c.win == True).label("not_changed_wins"),
         func.count().filter(monty_hall_history.c.change == False).label("total_not_changed")
     ])
     # 개인화
     if user_id:
         query = query.where(monty_hall_history.c.user_id == user_id)
     result = await database.fetch_one(query)
+    print(result)
 
     # 아직 시도가 없는 경우를 생각할 것
     return {
