@@ -4,6 +4,7 @@ from database import engine, metadata, database
 from routers import auth, dice_simul, monty_hall, admin, choice, anti_choice, stats, util
 
 from contextlib import asynccontextmanager
+from fastapi.middleware.cors import CORSMiddleware
 
 # on_event가 deprecated라서 생김.
 @asynccontextmanager
@@ -17,6 +18,17 @@ async def lifespan(app: FastAPI):
     await database.disconnect()
 
 app = FastAPI(lifespan=lifespan)
+
+# CORS Configuration
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 app.include_router(auth.router)
 app.include_router(dice_simul.router)
