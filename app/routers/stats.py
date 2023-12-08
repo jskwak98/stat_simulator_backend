@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, HTTPException
 from sqlalchemy.sql import func, select, case, join
 
 from models.user import users
@@ -13,6 +13,9 @@ from database import database
 from typing import Optional
 
 router = APIRouter(tags=["Statistics"])
+
+
+###### Dice Simul 관련 통계 ######
 
 # 전체 그룹 dice_histogram
 # /dice_histogram?user_id=some_user_id 로 부르면 특정 유저의 결과가 나온다.
@@ -121,7 +124,7 @@ async def get_dice_probs(sum_rolls: int):
                 "std" : STD}
     
 
-# Monty Hall 관련 APIs
+###### Monty Hall 관련 APIs ######
 
 # 학생들의 전략 선택이 어땠는지 보여준다
 @router.get("/get_strategy_stats")
@@ -189,3 +192,60 @@ async def winning_students():
     worst_students = [r for r in results if r.number_of_wins == min_wins]
 
     return {"best_students": best_students, "worst_students": worst_students}
+
+
+###### Choice 관련 통계 ######
+
+# 고른 통계를 히스토그램으로 표출
+@router.get("/choice_frequency")
+async def choice_frequency():
+    # choice column을 groupby로 묶고 각자 count
+    query = select([
+        choice_history.c.choice, 
+        func.count().label("count")
+    ]).group_by(choice_history.c.choice)
+
+    results = await database.fetch_all(query)
+    # dict 형태로 변환
+    frequency = {str(i): 0 for i in range(10)}
+    for result in results:
+        frequency[str(result.choice)] = result.count
+
+    return frequency
+
+
+###### Anti-Choice 관련 통계 ######
+
+# 고른 통계를 히스토그램으로 표출
+@router.get("/anti_choice_frequency")
+async def anti_choice_frequency():
+    # anti_choice column을 groupby로 묶고 각자 count
+    query = select([
+        anti_choice_history.c.anti_choice, 
+        func.count().label("count")
+    ]).group_by(anti_choice_history.c.anti_choice)
+
+    results = await database.fetch_all(query)
+    # dict 형태로 변환
+    frequency = {str(i): 0 for i in range(10)}
+    for result in results:
+        frequency[str(result.anti_choice)] = result.count
+
+    return frequency
+
+# 각 숫자 별 유저 리스트
+@router.get("/users_by_anti_choice/{number}")
+async def users_by_anti_choice(number: int):
+    if not 0 <= number <= 9:
+        raise HTTPException(status_code=400, detail="Number must be between 0 and 9")
+
+    # users와 join하고, 그 중 본인이 고른 숫자를 기준으로 select
+    query = select([
+        users.c.user_id, 
+        users.c.nickname
+    ]).select_from(
+        anti_choice_history.join(users, anti_choice_history.c.user_id == users.c.user_id)
+    ).where(anti_choice_history.c.anti_choice == number)
+
+    results = await database.fetch_all(query)
+    return [{"user_id": result.user_id, "nickname": result.nickname} for result in results]
