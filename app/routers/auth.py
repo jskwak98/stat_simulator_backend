@@ -28,4 +28,4 @@ async def login(credentials: HTTPBasicCredentials = Depends(security)):
     user = await get_user(credentials.username)
     if not user or not verify_password(credentials.password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Incorrect username or password")
-    return {"message": f"{user.nickname} 로그인 성공!\n본인이 맞는지 확인해주세요!"}
+    return {"message": f"{user.nickname} 로그인 성공!\n본인이 맞는지 확인해주세요!", "nickname": f"{user.nickname}"}
