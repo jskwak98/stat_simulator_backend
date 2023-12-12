@@ -36,7 +36,7 @@ async def roll_dice(user_id: str = Query(example="test"), record: bool = Query(e
                 await database.execute(dice_history.insert().values(**roll_data.to_db_model()))
             # 아니면 등록하면 안됨
             else:
-                raise HTTPException(status_code=400, detail="20번 다 굴렸어요!")
+                return {"message": "20번 다 굴렸어요! 비 기록용으로 굴려주세요!"}
 
         # 비 기록용 굴리기
         else:
