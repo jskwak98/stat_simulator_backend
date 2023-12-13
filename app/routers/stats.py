@@ -96,7 +96,7 @@ async def rarest_rolls():
 
     # 포맷팅해서 반환하기
     top_users_with_rolls = [
-        {"user_id": user_id, "total_score": total_score, "top_rolls": [{"roll": roll, "score": score} for roll, score in rolls]}
+        {"user_id": user_id, "total_score": round(total_score, 4), "top_rolls": [{"roll": roll, "score": round(score, 4)} for roll, score in rolls]}
         for user_id, (total_score, rolls) in sorted_users
     ]
 
