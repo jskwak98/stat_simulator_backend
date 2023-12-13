@@ -30,7 +30,7 @@ async def anti_choose_number(user_id: str = Query(example="test"), anti_choice: 
             await database.execute(anti_choice_history.insert().values(**anti_choice_data.model_dump()))
         # 아니면 등록하면 안됨
         else:
-            raise HTTPException(status_code=400, detail="한 번만 할 수 있어요!")
+            return {"message": "한 번만 할 수 있어요!"}
 
     else:
         return {"message": "아직 허가되지 않았습니다. 좀 이따 같이해요!"}
