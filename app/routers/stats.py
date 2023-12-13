@@ -120,8 +120,8 @@ async def get_dice_probs(sum_rolls: int):
             if sum_rolls <= val:
                 cnt += 1
         return {"message": f"{sum_rolls} 이상으로 나올 확률 -> {round(cnt / NUM_SAMPLES, 7) * 100}%",
-                "mean" : MEAN,
-                "std" : STD}
+                "mean" : round(MEAN, 3),
+                "std" : round(STD, 3)}
     
 
 ###### Monty Hall 관련 APIs ######
