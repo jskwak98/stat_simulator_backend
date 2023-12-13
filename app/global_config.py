@@ -9,7 +9,7 @@ import random
 import numpy as np
 
 def sample_and_sum():
-    return sum(random.sample(range(1, 101), 6))
+    return sum(random.choices(range(1, 101), k=6))
 
 # Number of times to repeat the sampling
 NUM_SAMPLES = 1000000
