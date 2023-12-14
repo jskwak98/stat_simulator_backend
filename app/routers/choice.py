@@ -28,6 +28,7 @@ async def choose_number(user_id: str = Query(example="test"), choice: int = Quer
         if user_choice['user_choice'] is None:
             choice_data = ChoiceCreate(user_id=user_id, choice=choice)
             await database.execute(choice_history.insert().values(**choice_data.model_dump()))
+            return {"message": f"{choice}를 선택했어요!"}
         # 아니면 등록하면 안됨
         else:
             return {"message": "한 번만 할 수 있어요!"}

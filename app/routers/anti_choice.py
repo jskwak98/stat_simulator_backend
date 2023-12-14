@@ -28,6 +28,7 @@ async def anti_choose_number(user_id: str = Query(example="test"), anti_choice: 
         if user_anti_choice['user_anti_choice'] is None:
             anti_choice_data = AntiChoiceCreate(user_id=user_id, anti_choice=anti_choice)
             await database.execute(anti_choice_history.insert().values(**anti_choice_data.model_dump()))
+            return {"message": f"{anti_choice}를 선택했어요!"}
         # 아니면 등록하면 안됨
         else:
             return {"message": "한 번만 할 수 있어요!"}
