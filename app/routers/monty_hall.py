@@ -4,7 +4,7 @@
 from fastapi import APIRouter
 from models.monty_hist import monty_hall_history, MontyHallResultCreate
 from database import database
-from sqlalchemy.sql import func
+from sqlalchemy.sql import func, select
 from global_config import simulations_config
 
 router = APIRouter(tags=["Monty Hall"])
@@ -16,9 +16,17 @@ MAX_MONTY_HALL_TRIALS = 7
 async def get_monty_hall_trial_count(user_id: str):
     # user_id로 monty_hall history 찾고 반환
     # Frontend에서도 사용할 것
-    query = func.count().select().where(monty_hall_history.c.user_id == user_id)
-    total_trials = await database.fetch_val(query)
-    return {"total_trials": total_trials}
+    total_trials_query = select([func.count()]).where(monty_hall_history.c.user_id == user_id)
+    total_trials = await database.fetch_val(total_trials_query)
+
+    # wins도 세어주자
+    total_wins_query = select([func.count()]).where(
+        (monty_hall_history.c.user_id == user_id) & 
+        (monty_hall_history.c.win == True)
+    )
+    total_wins = await database.fetch_val(total_wins_query)
+
+    return {"total_trials": total_trials, "total_wins": total_wins}
 
 
 # 몬티 홀 시행 후 db 저장
